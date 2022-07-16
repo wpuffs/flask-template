@@ -23,6 +23,7 @@ mccabe==0.7.0
 mistune==2.0.3
 platformdirs==2.5.2
 psycopg2==2.9.3
+psycopg2-binary==2.9.3
 PyJWT==2.4.0
 pylint==2.14.4
 pylint-flask==0.6
