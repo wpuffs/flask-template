@@ -4,49 +4,39 @@ import validators
 from src.database import User, db
 from flask_jwt_extended import jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 
-auth = Blueprint(name="auth", import_name=__name__, url_prefix="/api/auth")
+auth = Blueprint(name="auth", import_name=__name__, url_prefix="/auth")
 
 @auth.post('/register')
 def register():
-    username=request.json['username']
-    email=request.json['email']
-    password=request.json['password']
+    username = request.json['username']
+    password = request.json['password']
+    name = request.json['name']
 
-    if len(password) < 6:
-        return {'error': "Password is too short"}, 400
-
-    if len(username) < 3:
-        return {'error': "User is too short"}, 400
+    if len(username) > 20:
+        return {'error': "Username is too long"}, 400
 
     if not username.isalnum() or " " in username:
         return {'error': "Username should be alphanumeric, also no spaces"}, 400
 
-    if not validators.email(email):
-        return {'error': "Email is not valid"}, 400
-
-    if User.query.filter_by(email=email).first() is not None:
-        return {'error': "Email is taken"}, 409
-
     if User.query.filter_by(username=username).first() is not None:
-        return {'error': "username is taken"}, 409
+        return {'error': "Username is taken"}, 409
 
     pwd_hash = generate_password_hash(password)
-    user = User(username=username, password=pwd_hash, email=email)
+    user = User(username=username, password=pwd_hash, name=name)
     db.session.add(user)
     db.session.commit()
 
     return {
-        "message": "User created",
-        "user" : { "username": username, "email": email}
-    }, 201
+        "user" : { "name": name, "username": username }
+    }, 200
 
 
 @auth.post('/login')
 def login():
-    email = request.json.get("email", "")
+    username = request.json.get("username", "")
     password = request.json.get("password", "")
 
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(username=username).first()
 
     if user:
         is_pass_correct = check_password_hash(user.password, password)
@@ -57,10 +47,10 @@ def login():
 
             return {
                 "user" : {
-                    "refresh": refresh,
-                    "access": access,
+                    "name": user.name,
                     "username": user.username,
-                    "email": user.email
+                    "access": access,
+                    "refresh": refresh
                 }
             }, 200
     
@@ -74,8 +64,8 @@ def me():
     user = User.query.filter_by(id = user_id).first()
 
     return { 
-        "username": user.username,
-        "email": user.email
+        "name": user.name,
+        "username": user.username
     }
 
 
