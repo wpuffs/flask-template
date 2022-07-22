@@ -6,7 +6,7 @@ exchange = Blueprint(name="exchange", import_name=__name__, url_prefix="/exchang
 
 @exchange.get('/all')
 def get_all_exchange_rate(): 
-    return {
+    return jsonify(
         [
             {
                 "id": 1,
@@ -75,4 +75,4 @@ def get_all_exchange_rate():
                 "rate": 0.7113
             }
             ]
-    }, 200
+    ), 200
