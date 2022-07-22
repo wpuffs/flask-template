@@ -1,10 +1,12 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import os
+import json
 from src.auth import auth
 from src.database import db
 from src.wallet import wallet
 from src.exchange import exchange
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
+from flask_cors import CORS, cross_origin
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -15,6 +17,7 @@ def create_app(test_config=None):
             SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI"),
             SQLALCHEMY_TRACK_MODIFICATIONS = False,
             JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY"),
+            CORS_HEADERS = 'Content-Type'
         )
 
     else:
@@ -24,30 +27,17 @@ def create_app(test_config=None):
     db.init_app(app)
 
     JWTManager(app)
+    cors = CORS(app)
 
     app.register_blueprint(auth)
     app.register_blueprint(wallet)
     app.register_blueprint(exchange)
 
-    @app.post("/insert_transaction")
-    def insert_transaction():
-        user_id = request.json['user_id']
-        from_currency = request.json['from_currency']
-        to_currency = request.json['to_currency']
-        from_amount = request.json['from_amount']
-        to_amount = request.json['to_amount']
-        transaction = Transaction(user_id=user_id, from_currency=from_currency, to_currency=to_currency, from_amount = from_amount, to_amount = to_amount)
-        
-        db.session.add(transaction)
-        db.session.commit()
 
-        return {
-            "transaction" : { "id": transaction.id,  "user_id": user_id, "from_currency": from_currency, "to_currency":to_currency, "from_amount":from_amount, "to_amount":to_amount }
-        }, 200
 
     @app.errorhandler(404)
     def handle_404(e):
-        return { "error": "Page not found" }, 404
+        return { "error": "Page not found in multicurrency app" }, 404
 
     return app
 
