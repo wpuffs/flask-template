@@ -5,6 +5,7 @@ from src.auth import auth
 from src.database import db
 from src.wallet import wallet
 from src.exchange import exchange
+from src.transaction import transaction
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 from flask_cors import CORS, cross_origin
 
@@ -32,8 +33,7 @@ def create_app(test_config=None):
     app.register_blueprint(auth)
     app.register_blueprint(wallet)
     app.register_blueprint(exchange)
-
-
+    app.register_blueprint(transaction)
 
     @app.errorhandler(404)
     def handle_404(e):
