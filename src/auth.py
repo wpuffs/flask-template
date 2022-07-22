@@ -47,6 +47,7 @@ def login():
 
             return {
                 "user" : {
+                    "id": user.id,
                     "name": user.name,
                     "username": user.username,
                     "access": access,
