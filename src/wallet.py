@@ -99,6 +99,7 @@ def add_wallet_currency(wallet_id):
     return {
         "currency": {
             "id": currency.id,
+            "wallet_id": currency.wallet_id,
             "currency": currency.currency,
             "amount": currency.amount
         }
@@ -122,6 +123,7 @@ def get_wallet_currencies(wallet_id):
     for currency in currencies:
         data.append({
             'id': currency.id,
+            'wallet_id': currency.wallet_id,
             'currency': currency.currency,
             'amount': currency.amount
         })
