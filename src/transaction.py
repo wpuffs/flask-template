@@ -13,7 +13,7 @@ def insert_transaction():
     to_currency = request.json['to_currency']
     from_amount = request.json['from_amount']
     to_amount = request.json['to_amount']
-    transaction = Transaction(user_id=user_id, from_currency=from_currency, to_currency=to_currency, from_amount = from_amount, to_amount = to_amount)
+    transaction = Transaction(user_id=current_user, from_currency=from_currency, to_currency=to_currency, from_amount = from_amount, to_amount = to_amount)
     
     db.session.add(transaction)
     db.session.commit()
@@ -21,7 +21,7 @@ def insert_transaction():
     return {
             "transaction" : { 
             "id": transaction.id, 
-            "user_id": user_id, 
+            "user_id": current_user, 
             "from_currency": from_currency, 
             "to_currency":to_currency, 
             "from_amount":from_amount, 
